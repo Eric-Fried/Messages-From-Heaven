@@ -3,9 +3,8 @@
 
 -- EXAMPLE:
 
---  insert into "todos"
---    ("task", "isCompleted")
---    values
---      ('Learn to code', false),
---      ('Build projects', false),
---      ('Get a job', false);
+ insert into "plans"
+   ("name", "description", "planType", "pricePerMonth")
+   values
+     ('Free Plan', 'description', 'free', 0 ),
+     ('Paid Plan', 'description' , 'paid', 40)
