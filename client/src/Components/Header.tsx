@@ -19,6 +19,11 @@ export function Header() {
                 Catalog
               </Link>
             </li>
+            <li className="nav-item nav-link sign-up-link">
+              <Link to="/sign-up" className="title">
+                Sign Up
+              </Link>
+            </li>
           </ul>
         </div>
       </nav>

@@ -3,6 +3,7 @@ import './App.css';
 import { Header } from './Components/Header';
 import { Catalog } from './pages/Catalog';
 import { ProductDetails } from './pages/ProductDetails';
+import { SignUpForm } from './pages/SignUpForm';
 
 export default function App() {
   return (
@@ -12,6 +13,8 @@ export default function App() {
           <Route index element={<Catalog />} />
           <Route path="plans/:planId" element={<ProductDetails />} />
           <Route path="about" element={<div>About</div>} />
+          <Route path="sign-up" element={<SignUpForm />} />
+
           <Route path="*" element={<div>Not Found</div>} />
         </Route>
       </Routes>
