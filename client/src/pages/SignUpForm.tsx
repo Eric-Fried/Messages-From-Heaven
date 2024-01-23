@@ -1,12 +1,11 @@
 import { FormEvent, useState } from 'react';
 import '../pages/SignUpForm.css';
 
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 // import { PurchaseForm } from '../Components/PurchaseForm';
 
 export function SignUpForm() {
   const [error, setError] = useState<unknown>();
-  const { planId } = useParams();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>): Promise<void> {
     e.preventDefault();
@@ -22,10 +21,10 @@ export function SignUpForm() {
         },
         body: JSON.stringify(values),
       };
-      const response = await fetch('/api/planInfo', options);
+      const response = await fetch('/api/auth/sign-up', options);
       if (!response.ok) throw new Error(`Server error: ${response.status}`);
     } catch (err) {
-      console.error('Purchase Form Error', err);
+      console.error('SignUp  Form Error', err);
       setError(err);
     }
   }
@@ -33,7 +32,7 @@ export function SignUpForm() {
   if (error)
     return (
       <div>
-        Error saving Plan {planId}:{' '}
+        Error Signing up
         {error instanceof Error ? error.message : 'Unknown Error'}
       </div>
     );
@@ -53,11 +52,9 @@ export function SignUpForm() {
           <div className="row mb-4 plan-description">
             <div>
               <form onSubmit={handleSubmit}>
-                <input type="hidden" name="planId" value={planId} />
-
                 <label>
                   User Name:
-                  <input name="addressedTo" />
+                  <input name="username" />
                 </label>
 
                 <label>

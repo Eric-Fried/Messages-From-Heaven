@@ -2,11 +2,13 @@
 import 'dotenv/config';
 import express from 'express';
 import pg from 'pg';
+import argon2, { hash } from 'argon2';
 import {
   ClientError,
   defaultMiddleware,
   errorMiddleware,
 } from './lib/index.js';
+import { json } from 'stream/consumers';
 
 type Plan = {
   planId: number;
@@ -19,6 +21,11 @@ type Plan = {
   giftIncluded: string;
   toBeDeliveredOn: string;
   addressedTo: string;
+};
+
+type User = {
+  username: string;
+  password: string;
 };
 
 const connectionString =
@@ -111,6 +118,37 @@ app.post('/api/planInfo', async (req, res, next) => {
     const result = await db.query<Plan>(sql, params);
     const [entry] = result.rows;
     res.status(201).json(entry);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/api/auth/sign-up', async (req, res, next) => {
+  try {
+    const { username, password } = req.body as Partial<User>;
+    if (!username || !password) {
+      throw new ClientError(400, 'username and password are required fields');
+    }
+    /* TODO:
+     * Hash the user's password with `argon2.hash()` DONE
+     * Insert the user's "username" and "hashedPassword" into the "users" table.
+     * Respond to the client with a 201 status code and the new user's "userId", "username", and "createdAt" timestamp.
+     * Catch any errors.
+     *
+     * Hint: Insert statements can include a `returning` clause to retrieve the insterted row(s).
+     */
+
+    const hashedPassword = await argon2.hash(password);
+
+    const sql = `
+      insert into "users" ("username", "hashedPassword")
+        values ($1, $2)
+        returning "userId" , "username" ;
+    `;
+    const params = [username, hashedPassword];
+    const result = await db.query<User>(sql, params);
+    const [user] = result.rows;
+    res.status(201).json(user);
   } catch (err) {
     next(err);
   }
