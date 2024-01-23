@@ -8,6 +8,14 @@ import {
   errorMiddleware,
 } from './lib/index.js';
 
+type Plan = {
+  planId: number;
+  name: string;
+  description: string;
+  planType: string;
+  pricePerMonth: number;
+};
+
 const connectionString =
   process.env.DATABASE_URL ||
   `postgresql://${process.env.RDS_USERNAME}:${process.env.RDS_PASSWORD}@${process.env.RDS_HOSTNAME}:${process.env.RDS_PORT}/${process.env.RDS_DB_NAME}`;
@@ -29,10 +37,44 @@ app.use(express.static(reactStaticDir));
 app.use(express.static(uploadsStaticDir));
 app.use(express.json());
 
-app.get('/api/hello', (req, res) => {
-  res.json({ message: 'Hello, World!' });
+app.get('/api/plans', async (req, res, next) => {
+  try {
+    const sql = `
+      select *
+        from "plans";
+    `;
+    const result = await db.query(sql);
+    const plans = result.rows;
+    res.json(plans);
+  } catch (err) {
+    next(err);
+  }
 });
 
+app.get('/api/plans/:planId', async (req, res, next) => {
+  try {
+    const planId = Number(req.params.planId);
+    if (!planId) {
+      throw new ClientError(400, 'productId must be a positive integer');
+    }
+    const sql = `
+      select "planId",
+            "name",
+            "pricePerMonth",
+            "description"
+        from "plans"
+        where "planId" = $1
+    `;
+    const params = [planId];
+    const result = await db.query<Plan>(sql, params);
+    if (!result.rows[0]) {
+      throw new ClientError(404, `cannot find plan with planId ${planId}`);
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+});
 /*
  * Middleware that handles paths that aren't handled by static middleware
  * or API route handlers.
