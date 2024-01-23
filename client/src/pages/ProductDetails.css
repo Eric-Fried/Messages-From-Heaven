@@ -7,3 +7,8 @@
 .long-description {
   white-space: pre-wrap;
 }
+
+.plan-description {
+  display: flex;
+  justify-content: center;
+}

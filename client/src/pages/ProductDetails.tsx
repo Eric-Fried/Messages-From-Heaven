@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { fetchProduct, type Plan, toDollars } from '../lib';
 import './ProductDetails.css';
 import { Link, useParams } from 'react-router-dom';
+import { PurchaseForm } from '../Components/PurchaseForm';
 
 export function ProductDetails() {
   // TODO: Retrieve productId from the route
@@ -49,7 +50,7 @@ export function ProductDetails() {
               </Link>
             </div>
           </div>
-          <div className="row mb-4">
+          <div className="row mb-4 plan-description">
             {/* <div className="col-12 col-sm-6 col-md-5">
               <img src={imageUrl} alt={name} className="image" />
             </div> */}
@@ -59,8 +60,8 @@ export function ProductDetails() {
               <p>{description}</p>
             </div>
           </div>
-          <div className="row">
-            <button className="buy-button">Buy</button>
+          <div className="row purchase-form">
+            <PurchaseForm />
           </div>
         </div>
       </div>
