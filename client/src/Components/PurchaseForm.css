@@ -1,0 +1,26 @@
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+}
+
+.purchase-form {
+  display: flex;
+  justify-content: space-around;
+}
+
+.button-row {
+  display: flex;
+  justify-content: center;
+  width: 189px;
+}
+
+.message-box {
+  height: 200px;
+  width: 189px;
+}

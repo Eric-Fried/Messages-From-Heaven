@@ -14,6 +14,11 @@ type Plan = {
   description: string;
   planType: string;
   pricePerMonth: number;
+  purchasedBy: number;
+  message: string;
+  giftIncluded: string;
+  toBeDeliveredOn: string;
+  addressedTo: string;
 };
 
 const connectionString =
@@ -71,6 +76,41 @@ app.get('/api/plans/:planId', async (req, res, next) => {
       throw new ClientError(404, `cannot find plan with planId ${planId}`);
     }
     res.json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/api/planInfo', async (req, res, next) => {
+  try {
+    const {
+      planId,
+      message,
+      purchasedBy,
+      giftIncluded,
+      toBeDeliveredOn,
+      addressedTo,
+    } = req.body as Partial<Plan>;
+    if (!message || !planId) {
+      throw new ClientError(400, 'Message is a required fields');
+    }
+    const sql = `
+      insert into "planInfo" ("planId", "message", "purchasedBy" , "giftIncluded",
+      "toBeDeliveredOn", "addressedTo")
+        values ($1, $2, $3, $4, $5,$6)
+        returning *;
+    `;
+    const params = [
+      planId,
+      message,
+      purchasedBy,
+      giftIncluded,
+      toBeDeliveredOn,
+      addressedTo,
+    ];
+    const result = await db.query<Plan>(sql, params);
+    const [entry] = result.rows;
+    res.status(201).json(entry);
   } catch (err) {
     next(err);
   }
