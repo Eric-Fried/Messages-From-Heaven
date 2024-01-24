@@ -1,11 +1,12 @@
 import { FormEvent, useState } from 'react';
 import '../pages/SignInForm.css';
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 // import { PurchaseForm } from '../Components/PurchaseForm';
 
 export function SignInForm() {
   const [error, setError] = useState<unknown>();
+  const navigate = useNavigate();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>): Promise<void> {
     e.preventDefault();
@@ -21,10 +22,17 @@ export function SignInForm() {
         },
         body: JSON.stringify(values),
       };
-      const response = await fetch('/api/auth/sign-up', options);
-      if (!response.ok) throw new Error(`Server error: ${response.status}`);
+
+      const res = await fetch('/api/auth/sign-in', options);
+      if (!res.ok) {
+        throw new Error(`fetch Error ${res.status}`);
+      }
+      const { user, token } = await res.json();
+      sessionStorage.setItem('token', token);
+      console.log('Signed In', user, '; received token:', token);
+      navigate('/');
     } catch (err) {
-      console.error('SignUp  Form Error', err);
+      console.error('Error signing in', err);
       setError(err);
     }
   }

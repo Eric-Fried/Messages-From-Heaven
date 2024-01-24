@@ -8,7 +8,7 @@ import {
   defaultMiddleware,
   errorMiddleware,
 } from './lib/index.js';
-import { json } from 'stream/consumers';
+import jwt from 'jsonwebtoken';
 
 type Plan = {
   planId: number;
@@ -25,7 +25,9 @@ type Plan = {
 
 type User = {
   username: string;
+  userId: number;
   password: string;
+  hashedPassword: string;
 };
 
 const connectionString =
@@ -37,6 +39,9 @@ const db = new pg.Pool({
     rejectUnauthorized: false,
   },
 });
+
+const hashKey = process.env.TOKEN_SECRET;
+if (!hashKey) throw new Error('TOKEN_SECRET not found in .env');
 
 const app = express();
 
@@ -153,6 +158,37 @@ app.post('/api/auth/sign-up', async (req, res, next) => {
     next(err);
   }
 });
+
+app.post('/api/auth/sign-in', async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      throw new ClientError(401, 'invalid login');
+    }
+    const sql = `
+      select "userId",
+            "hashedPassword"
+        from "users"
+      where "username" = $1
+    `;
+    const params = [username];
+    const result = await db.query<User>(sql, params);
+    const [auth] = result.rows;
+    if (!auth) {
+      throw new ClientError(401, 'invalid login');
+    }
+    const { userId, hashedPassword } = auth;
+    if (!(await argon2.verify(hashedPassword, password))) {
+      throw new ClientError(401, 'invalid login');
+    }
+    const payload = { userId, username };
+    const token = jwt.sign(payload, hashKey);
+    res.json({ token, user: payload });
+  } catch (err) {
+    next(err);
+  }
+});
+
 /*
  * Middleware that handles paths that aren't handled by static middleware
  * or API route handlers.

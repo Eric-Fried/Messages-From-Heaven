@@ -1,11 +1,12 @@
 import { FormEvent, useState } from 'react';
 import '../pages/SignUpForm.css';
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 // import { PurchaseForm } from '../Components/PurchaseForm';
 
 export function SignUpForm() {
   const [error, setError] = useState<unknown>();
+  const navigate = useNavigate();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>): Promise<void> {
     e.preventDefault();
@@ -23,6 +24,7 @@ export function SignUpForm() {
       };
       const response = await fetch('/api/auth/sign-up', options);
       if (!response.ok) throw new Error(`Server error: ${response.status}`);
+      navigate('/sign-in');
     } catch (err) {
       console.error('SignUp  Form Error', err);
       setError(err);
