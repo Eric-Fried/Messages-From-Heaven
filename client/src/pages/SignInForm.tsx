@@ -28,7 +28,7 @@ export function SignInForm() {
         throw new Error(`fetch Error ${res.status}`);
       }
       const { user, token } = await res.json();
-      sessionStorage.setItem('token', token);
+      localStorage.setItem('token', token);
       console.log('Signed In', user, '; received token:', token);
       navigate('/');
     } catch (err) {

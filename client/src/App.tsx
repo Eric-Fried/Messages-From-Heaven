@@ -7,12 +7,17 @@ import { SignUpForm } from './pages/SignUpForm';
 import { SignInForm } from './pages/SignInForm';
 
 export default function App() {
+  const isLoggedIn = localStorage.getItem('token');
+  console.log(isLoggedIn);
   return (
     <div>
       <Routes>
         <Route path="/" element={<Header />}>
           <Route index element={<Catalog />} />
-          <Route path="plans/:planId" element={<ProductDetails />} />
+          <Route
+            path="plans/:planId"
+            element={isLoggedIn ? <ProductDetails /> : <SignInForm />}
+          />
           <Route path="about" element={<div>About</div>} />
           <Route path="sign-up" element={<SignUpForm />} />
           <Route path="sign-in" element={<SignInForm />} />

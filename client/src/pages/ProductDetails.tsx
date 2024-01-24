@@ -1,15 +1,22 @@
 import { useEffect, useState } from 'react';
 import { fetchProduct, type Plan, toDollars } from '../lib';
 import './ProductDetails.css';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { PurchaseForm } from '../Components/PurchaseForm';
 
 export function ProductDetails() {
+  const isLoggedIn = localStorage.getItem('token');
   // TODO: Retrieve productId from the route
   const { planId } = useParams();
   const [plan, setPlan] = useState<Plan>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown>();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/sign-in');
+    }
+  }, []);
 
   useEffect(() => {
     async function loadProduct(planId: number) {
