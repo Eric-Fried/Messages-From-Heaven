@@ -1,10 +1,10 @@
 import { FormEvent, useState } from 'react';
-import '../pages/SignUpForm.css';
+import '../pages/SignInForm.css';
 
 import { Link } from 'react-router-dom';
 // import { PurchaseForm } from '../Components/PurchaseForm';
 
-export function SignUpForm() {
+export function SignInForm() {
   const [error, setError] = useState<unknown>();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>): Promise<void> {
@@ -63,13 +63,13 @@ export function SignUpForm() {
                 </label>
 
                 <div className="button-row">
-                  <button>Sign Up</button>
+                  <button>Sign In</button>
                 </div>
-                <p>Already Have An Account?</p>
+                <p>Dont Have An Account?</p>
 
                 <div className="button-row">
-                  <Link to="/sign-in">
-                    <button>Sign in Here</button>
+                  <Link to="/sign-up">
+                    <button>Sign Up Here</button>
                   </Link>
                 </div>
               </form>

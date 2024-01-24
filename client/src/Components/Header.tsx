@@ -24,6 +24,11 @@ export function Header() {
                 Sign Up
               </Link>
             </li>
+            <li className="nav-item nav-link sign-up-link">
+              <Link to="/sign-in" className="title">
+                Sign In
+              </Link>
+            </li>
           </ul>
         </div>
       </nav>
