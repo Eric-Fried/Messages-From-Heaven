@@ -2,11 +2,13 @@
 import 'dotenv/config';
 import express from 'express';
 import pg from 'pg';
+import argon2, { hash } from 'argon2';
 import {
   ClientError,
   defaultMiddleware,
   errorMiddleware,
 } from './lib/index.js';
+import jwt from 'jsonwebtoken';
 
 type Plan = {
   planId: number;
@@ -21,6 +23,13 @@ type Plan = {
   addressedTo: string;
 };
 
+type User = {
+  username: string;
+  userId: number;
+  password: string;
+  hashedPassword: string;
+};
+
 const connectionString =
   process.env.DATABASE_URL ||
   `postgresql://${process.env.RDS_USERNAME}:${process.env.RDS_PASSWORD}@${process.env.RDS_HOSTNAME}:${process.env.RDS_PORT}/${process.env.RDS_DB_NAME}`;
@@ -30,6 +39,9 @@ const db = new pg.Pool({
     rejectUnauthorized: false,
   },
 });
+
+const hashKey = process.env.TOKEN_SECRET;
+if (!hashKey) throw new Error('TOKEN_SECRET not found in .env');
 
 const app = express();
 
@@ -115,6 +127,68 @@ app.post('/api/planInfo', async (req, res, next) => {
     next(err);
   }
 });
+
+app.post('/api/auth/sign-up', async (req, res, next) => {
+  try {
+    const { username, password } = req.body as Partial<User>;
+    if (!username || !password) {
+      throw new ClientError(400, 'username and password are required fields');
+    }
+    /* TODO:
+     * Hash the user's password with `argon2.hash()` DONE
+     * Insert the user's "username" and "hashedPassword" into the "users" table.
+     * Respond to the client with a 201 status code and the new user's "userId", "username", and "createdAt" timestamp.
+     * Catch any errors.
+     *
+     * Hint: Insert statements can include a `returning` clause to retrieve the insterted row(s).
+     */
+
+    const hashedPassword = await argon2.hash(password);
+
+    const sql = `
+      insert into "users" ("username", "hashedPassword")
+        values ($1, $2)
+        returning "userId" , "username" ;
+    `;
+    const params = [username, hashedPassword];
+    const result = await db.query<User>(sql, params);
+    const [user] = result.rows;
+    res.status(201).json(user);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/api/auth/sign-in', async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      throw new ClientError(401, 'invalid login');
+    }
+    const sql = `
+      select "userId",
+            "hashedPassword"
+        from "users"
+      where "username" = $1
+    `;
+    const params = [username];
+    const result = await db.query<User>(sql, params);
+    const [auth] = result.rows;
+    if (!auth) {
+      throw new ClientError(401, 'invalid login');
+    }
+    const { userId, hashedPassword } = auth;
+    if (!(await argon2.verify(hashedPassword, password))) {
+      throw new ClientError(401, 'invalid login');
+    }
+    const payload = { userId, username };
+    const token = jwt.sign(payload, hashKey);
+    res.json({ token, user: payload });
+  } catch (err) {
+    next(err);
+  }
+});
+
 /*
  * Middleware that handles paths that aren't handled by static middleware
  * or API route handlers.

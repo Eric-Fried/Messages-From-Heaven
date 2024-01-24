@@ -38,14 +38,12 @@ export function PurchaseForm() {
   return (
     <form onSubmit={handleSubmit}>
       <input type="hidden" name="planId" value={planId} />
-      <label>
-        Name of Planholder:
-        <input name="Purchaser " />
-      </label>
+
       <label>
         Reciepient Name:
-        <input name="recepient" />
+        <input name="addressedTo" />
       </label>
+
       <label>
         Message:
         <textarea
@@ -56,7 +54,7 @@ export function PurchaseForm() {
       </label>
 
       <div className="button-row">
-        <button>Sign Up</button>
+        <button>Buy</button>
       </div>
     </form>
   );
