@@ -40,7 +40,7 @@ export function PurchaseForm() {
       <input type="hidden" name="planId" value={planId} />
 
       <label>
-        Reciepient Name:
+        Recipient Name:
         <input name="addressedTo" />
       </label>
 

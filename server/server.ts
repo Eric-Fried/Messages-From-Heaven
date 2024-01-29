@@ -162,6 +162,7 @@ app.post('/api/auth/sign-up', async (req, res, next) => {
 app.post('/api/auth/sign-in', async (req, res, next) => {
   try {
     const { username, password } = req.body;
+    console.log(username, password);
     if (!username || !password) {
       throw new ClientError(401, 'invalid login');
     }
@@ -174,14 +175,17 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
     const params = [username];
     const result = await db.query<User>(sql, params);
     const [auth] = result.rows;
+    console.log(auth);
     if (!auth) {
       throw new ClientError(401, 'invalid login');
     }
     const { userId, hashedPassword } = auth;
+    console.log(userId, hashedPassword);
     if (!(await argon2.verify(hashedPassword, password))) {
       throw new ClientError(401, 'invalid login');
     }
     const payload = { userId, username };
+    console.log(payload);
     const token = jwt.sign(payload, hashKey);
     res.json({ token, user: payload });
   } catch (err) {

@@ -17,7 +17,7 @@ CREATE TABLE "plans" (
 
 CREATE TABLE "users" (
   "userId" serial PRIMARY KEY,
-  "username" text,
+  "username" text unique,
   "planId" integer,
   "created_at" timestamptz,
   "hashedPassword" text
