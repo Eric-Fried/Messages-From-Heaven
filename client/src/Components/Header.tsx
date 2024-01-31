@@ -32,6 +32,9 @@ export function Header() {
                   Sign Out
                 </div>
               </li>
+              <li className="nav-item nav-link">
+                <Link to="/donate">Donate</Link>
+              </li>
             </ul>
           </div>
         </nav>
@@ -66,6 +69,11 @@ export function Header() {
             <li className="nav-item nav-link sign-up-link">
               <Link to="/sign-in" className="title">
                 Sign In
+              </Link>
+            </li>
+            <li className="nav-item nav-link">
+              <Link to="/donate" className="title">
+                Donate
               </Link>
             </li>
           </ul>

@@ -128,6 +128,45 @@ app.post('/api/planInfo', async (req, res, next) => {
   }
 });
 
+app.get('/api/donorPlans', async (req, res, next) => {
+  try {
+    const sql = `
+      select *
+        from "donorPlans";
+    `;
+    const result = await db.query(sql);
+    const donors = result.rows;
+    res.json(donors);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/api/donorPlans/:donorPlanId', async (req, res, next) => {
+  try {
+    const planId = Number(req.params.donorPlanId);
+    if (!planId) {
+      throw new ClientError(400, 'productId must be a positive integer');
+    }
+    const sql = `
+      select "donorPlanId",
+            "name",
+            "price",
+            "description"
+        from "donorPlans"
+        where "donorPlanId" = $1
+    `;
+    const params = [planId];
+    const result = await db.query<Plan>(sql, params);
+    if (!result.rows[0]) {
+      throw new ClientError(404, `cannot find plan with planId ${planId}`);
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.post('/api/auth/sign-up', async (req, res, next) => {
   try {
     const { username, password } = req.body as Partial<User>;

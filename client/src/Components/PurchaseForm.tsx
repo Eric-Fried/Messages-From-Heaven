@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
 import './PurchaseForm.css';
 import { useParams } from 'react-router-dom';
+import { postPlanInfo } from '../lib';
 
 export function PurchaseForm() {
   const [error, setError] = useState<unknown>();
@@ -13,15 +14,7 @@ export function PurchaseForm() {
     const values = Object.fromEntries(data.entries());
 
     try {
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
-      };
-      const response = await fetch('/api/planInfo', options);
-      if (!response.ok) throw new Error(`Server error: ${response.status}`);
+      await postPlanInfo(values);
     } catch (err) {
       console.error('Purchase Form Error', err);
       setError(err);
