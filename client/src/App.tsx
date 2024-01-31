@@ -9,21 +9,16 @@ import { DonorCatalog } from './pages/DonorCatalog';
 import { DonorProductDetails } from './pages/DonorProductDetails';
 
 export default function App() {
-  const isLoggedIn = localStorage.getItem('token');
-  console.log(isLoggedIn);
   return (
     <div>
       <Routes>
         <Route path="/" element={<Header />}>
           <Route index element={<Catalog />} />
-          <Route
-            path="plans/:planId"
-            element={isLoggedIn ? <ProductDetails /> : <SignInForm />}
-          />
+          <Route path="plans/:planId" element={<ProductDetails />} />
 
           <Route
             path="donorPlans/:donorPlanId"
-            element={isLoggedIn ? <DonorProductDetails /> : <SignInForm />}
+            element={<DonorProductDetails />}
           />
           <Route path="about" element={<div>About</div>} />
           <Route path="sign-up" element={<SignUpForm />} />

@@ -1,3 +1,15 @@
 .title {
   color: white;
 }
+
+div.title {
+  font-weight: 500;
+}
+
+.navbar-collapse {
+  background-color: #133374;
+}
+
+nav {
+  background-color: #133374;
+}
