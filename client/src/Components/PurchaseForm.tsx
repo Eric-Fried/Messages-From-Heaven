@@ -1,14 +1,16 @@
 import { FormEvent, useState } from 'react';
 import './PurchaseForm.css';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { postPlanInfo } from '../lib';
 
 export function PurchaseForm() {
   const [error, setError] = useState<unknown>();
   const { planId } = useParams();
+  const navigate = useNavigate();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>): Promise<void> {
-    e.preventDefault();
+    // e.preventDefault();
+    navigate('/');
     const form = e.currentTarget;
     const data = new FormData(form);
     const values = Object.fromEntries(data.entries());
